@@ -127,11 +127,9 @@ app.post("/admin",async (request,response)=>{
         return response.redirect("/signup");
       }
 })
-app.get("/signout",(request, response) => {
+app.get("/signout",(request, response,next) => {
     request.logout((err) => {
-      // eslint-disable-next-line no-undef
       if (err) {
-        // eslint-disable-next-line no-undef
         return next(err);
       }
       response.redirect("/");
