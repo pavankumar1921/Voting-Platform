@@ -4,10 +4,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title><%= title %></title>
 </head>
-<body>
-    Election Page
-    <a href="/signout" class="text-red-400">Sign out</a>
+<body style="background-color: rgb(182, 247, 217);">
+    <div class="my-3 mx-6" >
+        <div class="flex gap-2 py-4 justify-between">
+            <div><b><h5 class="text-xl">My Election List</h5></b></div>
+            <div><b><h5 class="text-xl">Welcome <%= userName %></h5></b>
+        </div>  
+            <div class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">
+                <a href="/addquestion" class="text-white">Create Election</a>
+            </div>
+            <div class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2">
+                <a href="/signout" > Signout</a>
+            </div>
+        </div>
+        <div class="flex-auto">
+            <%- include('elecs.ejs') %>
+        </div>
+    </div>
+        </div>
+    </div>
 </body>
 </html>

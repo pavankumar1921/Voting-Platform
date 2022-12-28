@@ -4,7 +4,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const path = require("path");
-const {Admin} = require("./models")
+const {Admin,election} = require("./models")
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
@@ -86,7 +86,24 @@ app.get("/login", (request, response) => {
         csrfToken: request.csrfToken()
     });
 });
- 
+
+
+app.get("/election",connectEnsureLogin.ensureLoggedIn(), async (request,response)=>{
+  let user = await Admin.findByPk(request.user.id);
+  const userName = user.dataValues.firstName;
+  const list_of_elections = await election.getElections(request.user.id);
+  if (request.accepts("html")) {
+    response.render("election", {
+      title: "Voting Platform",
+      userName,
+      list_of_elections,
+    });
+  } else {
+    return response.json({
+      list_of_elections,
+    });
+  }
+})
 app.use(function(request,response,next){
     response.locals.messages = request.flash();
     next();
@@ -118,7 +135,7 @@ app.post("/admin",async (request,response)=>{
             console.log(err);
             response.redirect("/");
           } else {
-            response.render("election");
+            response.redirect("/election");
           }
         });
       } catch (error) {
@@ -137,8 +154,7 @@ app.get("/signout",(request, response,next) => {
   });
 
 app.post("/session",passport.authenticate('local',{failureRedirect: "/login",failureFlash:true}),
-function(request,response){
-    console.log(request.user);
-    response.redirect("election")
+async(request,response)=>{
+    return response.redirect("/election")
 })
 module.exports = app;

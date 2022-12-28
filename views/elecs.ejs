@@ -1,0 +1,16 @@
+<div>  
+    <b>
+    <p class="text-red-700"><%= (list_of_elections.length==0)?"Empty elections!!!":"" %></p>
+</b>
+ <ul class="list-none">
+        <% for (let i=0; i<list_of_elections.length; i++) { %>
+            <li>
+                <div class="flex items-center w-fit my-2 px-2 py-1 rounded">
+                    <b>
+                    <h2  class="m-1 text-sm text-black-300 "><a href="/elecs/<%=list_of_elections[i].id %>" class="m-1 text-sm text-black-600 "><%=i+1%>)<%= list_of_elections[i].elecName %> </a></h2>
+                </b>
+                </div>
+            </li>
+        <% } %>
+    </ul>
+</div>
