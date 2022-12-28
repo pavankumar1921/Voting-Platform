@@ -5,6 +5,7 @@ const db = require("../models/index");
 const app = require("../app");
 
 const { response } = require("../app");
+const election = require("../models/election");
 let server, agent ;
 function extractCsrfToken(res){
     var $ = cheerio.load(res.text);
@@ -49,5 +50,17 @@ describe("test suite",()=>{
       expect(res.statusCode).toBe(302);
       res = await agent.get("/election");
       expect(res.statusCode).toBe(302);
+    })
+    test("Adding an election",async()=>{
+      const agent = request.agent(server);
+      await login(agent,"admin@gmail.com","12345678");
+      let res = await agent.get("/creatingElection");
+      let csrfToken = extractCsrfToken(res);
+      const response = await agent.post("/election").send({
+        elecName: "Class Monitor Elections",
+        publicurl: "abc.gs",
+        _csrf: csrfToken,
+      })
+      expect(response.statusCode).toBe(302)
     })
 })

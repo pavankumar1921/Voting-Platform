@@ -11,7 +11,7 @@ const session = require("express-session");
 const LocalStrategy = require("passport-local");
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
-const flash = require("connect-flash")
+const flash = require("connect-flash");
 
 app.use(flash())
 app.use(bodyParser.json())
@@ -155,7 +155,7 @@ app.get("/creatingElection",connectEnsureLogin.ensureLoggedIn(),async(request,re
 })
 
 app.post("/election",connectEnsureLogin.ensureLoggedIn(),async(request,response)=>{
-  if(request.body.electionName.length === 0){
+  if(request.body.elecName.length === 0){
     request.flash("error","Election must have a name!");
     return response.redirect("/creatingElection");
   }
@@ -165,7 +165,7 @@ app.post("/election",connectEnsureLogin.ensureLoggedIn(),async(request,response)
   }
   try{
     await election.addElection({
-      elecName: request.body.electionName,
+      elecName: request.body.elecName,
       publicurl: request.body.publicurl,
       adminId: request.user.id,
     })
@@ -181,6 +181,34 @@ app.get("/elecs/:id",connectEnsureLogin.ensureLoggedIn(),
     
   })
 
+app.get("/questions/:id")
+
+app.get("/createQuestion/:id",connectEnsureLogin.ensureLoggedIn(),
+  async(request,response)=>{
+    response.render("createQuestion",{
+      id:request.params.id,
+      csrfToken: request.csrfToken(),
+    })
+  })
+
+app.post("/createQuestion/:id",connectEnsureLogin.ensureLoggedIn(),
+  async(request,response)=>{
+    if(!request.body.questionName){
+      request.flash("error","Question must be created");
+      return response.redirect(`/createQuestion/${request.params.id}`)
+    }
+    try{
+      const question = await question.addquestion({
+        elecId: request.params.id,
+        questionName: request.body.questionName,
+        desc: request.body.desc,
+      });
+      return response.redirect(`/getElection/adoption/${request.params.id}/${question.id}/options`)
+    }catch(error){
+      console.log(error);
+      return response.status(422).json(error)
+    }
+  })
 app.get("/signout",(request, response,next) => {
     request.logout((err) => {
       if (err) {
