@@ -17,12 +17,22 @@ module.exports = (sequelize, DataTypes) => {
         order:[["id","ASC"]]
       })
     }
+    static addElection({elecName,publicurl,adminId}){
+      return this.create({
+        elecName,
+        publicurl,
+        adminId,
+      })
+    }
   
   static associate(models) {
     // define association here
     election.belongsTo(models.Admin, {
       foreignKey: "adminId",
     });
+    election.hasMany(models.question,{
+      foreignKey: "elecId"
+    })
   }
 }
   election.init({

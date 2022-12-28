@@ -23,7 +23,7 @@ const login = async (agent, username, password) => {
 describe("test suite",()=>{
     beforeAll(async () =>{
         await db.sequelize.sync({force:true});
-        server = app.listen(4000,()=>{});
+        server = app.listen(3000,()=>{});
         agent = request.agent(server);
     })
     afterAll(async () =>{
@@ -42,4 +42,12 @@ describe("test suite",()=>{
         });
         expect(res.statusCode).toBe(302);
       });
+    test("Sign out",async ()=>{
+      let res = await agent.get("/election");
+      expect(res.statusCode).toBe(200);
+      res = await agent.get("/signout");
+      expect(res.statusCode).toBe(302);
+      res = await agent.get("/election");
+      expect(res.statusCode).toBe(302);
+    })
 })

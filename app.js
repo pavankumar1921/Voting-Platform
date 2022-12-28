@@ -4,7 +4,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const path = require("path");
-const {Admin,election} = require("./models")
+const {Admin,election,question} = require("./models")
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
@@ -143,6 +143,36 @@ app.post("/admin",async (request,response)=>{
         // request.flash("error", "User Already Exist with this mail!");
         return response.redirect("/signup");
       }
+})
+
+app.get("/creatingElection",connectEnsureLogin.ensureLoggedIn(),async(request,response)=>{
+  // if(request.user.case === "admins"){
+    response.render("createNewElec",{
+      title:"Creating new Election",
+      csrfToken:request.csrfToken(),
+    })
+  // }
+})
+
+app.post("/elections",connectEnsureLogin.ensureLoggedIn(),async(request,response)=>{
+  if(request.body.elecName.length === 0){
+    request.flash("error","Election must have a name!");
+    return response.redirect("/creatingElection");
+  }
+  if(request.body.publicurl.length===0){
+    request.flash("error","Public Url must be passed");
+    return response.redirect("/creatingElection");
+  }
+  try{
+    await election.addElection({
+      elecName: request.body.elecName,
+      publicurl: request.body.publicurl,
+      adminId: request.user.id,
+    })
+  }catch(error){
+    request.flash("error","This URL is already taken,try with a new one.");
+    return response.redirect("/creatingElection")
+  }
 })
 app.get("/signout",(request, response,next) => {
     request.logout((err) => {
