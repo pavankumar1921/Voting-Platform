@@ -154,26 +154,33 @@ app.get("/creatingElection",connectEnsureLogin.ensureLoggedIn(),async(request,re
   // }
 })
 
-app.post("/elections",connectEnsureLogin.ensureLoggedIn(),async(request,response)=>{
-  if(request.body.elecName.length === 0){
+app.post("/election",connectEnsureLogin.ensureLoggedIn(),async(request,response)=>{
+  if(request.body.electionName.length === 0){
     request.flash("error","Election must have a name!");
     return response.redirect("/creatingElection");
   }
-  if(request.body.publicurl.length===0){
+  if(request.body.publicurl.length === 0){
     request.flash("error","Public Url must be passed");
     return response.redirect("/creatingElection");
   }
   try{
     await election.addElection({
-      elecName: request.body.elecName,
+      elecName: request.body.electionName,
       publicurl: request.body.publicurl,
       adminId: request.user.id,
     })
+    return response.redirect("/election")
   }catch(error){
     request.flash("error","This URL is already taken,try with a new one.");
     return response.redirect("/creatingElection")
   }
 })
+
+app.get("/elecs/:id",connectEnsureLogin.ensureLoggedIn(),
+  async(request,response)=>{
+    
+  })
+
 app.get("/signout",(request, response,next) => {
     request.logout((err) => {
       if (err) {
