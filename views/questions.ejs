@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-        function deletequestion(id) {
+        function deleteQuestion(id) {
             fetch(`/deleteQuestion/${id}`, {
                 method: "delete",
                 headers: {"Content-Type":"application/json"},

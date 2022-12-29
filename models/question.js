@@ -4,7 +4,15 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class question extends Model {
-    
+    static associate(models) {
+      // define association here
+      question.belongsTo(models.election,{
+        foreignKey: "elecId"
+      })
+      question.hasMany(models.options,{
+        foreignKey:"questionId"
+      })
+    }
     static getQuestions(elecId){
       return this.findAll({
         where:{
@@ -38,19 +46,18 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
 
-    static editQuestion(questionName,desc,elecId){
+    static editQuestion(questionName,desc,questionId){
       return this.update({
         questionName:questionName,
         desc: desc,
+      },{
+        where:{
+          id: questionId,
+        }
       })
     }
 
-    static associate(models) {
-      // define association here
-      question.belongsTo(models.election,{
-        foreignKey: "elecId"
-      })
-    }
+   
   }
   question.init({
     questionName: DataTypes.STRING,

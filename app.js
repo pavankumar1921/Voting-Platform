@@ -4,7 +4,8 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const { Admin, election, question } = require("./models");
+// eslint-disable-next-line no-unused-vars
+const { Admin, election, question,options,voters } = require("./models");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
@@ -52,7 +53,7 @@ passport.use(
     (username, password, done) => {
       Admin.findOne({ where: { email: username } })
         .then(async (admin) => {
-          const result = await bcrypt.compare(password, Admin.password);
+          const result = await bcrypt.compare(password, admin.password);
           if (result) {
             return done(null, admin);
           } else {
@@ -284,6 +285,56 @@ app.post(
     }
   }
 );
+
+app.get("/election/:elecId/questions/:questionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async(request,response)=>{
+      const adminId = request.user.id;
+      const admin = await Admin.findByPk(adminId);
+      const electionGoing = await election.findByPk(request.params.elecId);
+      const presQuestion = await question.findByPk(request.params.questionId);
+      response.render("editQues",{
+        userName: admin.name,
+        election: electionGoing,
+        question: presQuestion,
+        csrf: request.csrfToken(),
+      })
+  })
+
+app.post("/election/:elecId/questions/:questionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async(request,response)=>{
+    // if (request.user.case === "admins") {
+      try {
+        await question.editQuestion(
+          request.body.questionName,
+          request.body.desc,
+          request.params.questionId,
+        );
+        response.redirect(`/questions/${request.params.elecId}`);
+      } catch (error) {
+        console.log(error);
+        return;
+      // }
+    }
+  })
+
+  app.delete(
+    "/deletequestion/:id",
+    connectEnsureLogin.ensureLoggedIn(),
+    async (request, response) => {
+      // if (request.user.case === "admins") {
+        try {
+          const res = await question.deleteQuestion(request.params.id);
+          return response.json({ success: res === 1 });
+        } catch (error) {
+          console.log(error);
+          return response.status(422).json(error);
+        }
+      }
+    // }
+  );
+
 app.get("/signout", (request, response, next) => {
   request.logout((err) => {
     if (err) {
