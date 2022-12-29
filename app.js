@@ -52,7 +52,7 @@ passport.use(
     (username, password, done) => {
       Admin.findOne({ where: { email: username } })
         .then(async (admin) => {
-          const result = await bcrypt.compare(password, admin.password);
+          const result = await bcrypt.compare(password, Admin.password);
           if (result) {
             return done(null, admin);
           } else {
@@ -269,6 +269,7 @@ app.post(
       return response.redirect(`/createQuestion/${request.params.id}`);
     }
     try {
+      // eslint-disable-next-line no-unused-vars
       const questions = await question.addQuestions({
         elecId: request.params.id,
         questionName: request.body.questionName,
