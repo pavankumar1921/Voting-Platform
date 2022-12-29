@@ -201,20 +201,20 @@ app.post(
 app.get("/elecs/:id",connectEnsureLogin.ensureLoggedIn(),
   async(request,response)=>{
     try{
-      const question = await question.getQuestions(request.params.id);
-      const election = await election.findByPk(request.params.id);
+      const questions = await question.getQuestions(request.params.id);
+      const elections = await election.findByPk(request.params.id);
       // eslint-disable-next-line no-unused-vars
       const elecName = await election.getElections(
         request.params.id,request.user.id
       )
       const countOfQuestions = await question.countQuestions(request.params.id);
       response.render("elecQuestion",{
-        election: election,
-        publicurl: election.publicurl,
-        questions: question,
+        election: elections,
+        publicurl: elections.publicurl,
+        question: questions,
         id:request.params.id,
-        title: election.elecName,
-        countQuestions: countOfQuestions,
+        title: elections.elecName,
+        countOfQuestions: countOfQuestions,
       })
     }catch(error){
       console.log(error);
@@ -231,17 +231,17 @@ app.get("/questions/:id",connectEnsureLogin.ensureLoggedIn(),
       request.user.id
     )
     const anyQuestion = await question.getQuestions(request.params.id);
-    const election = await election.findByPk(request.params.id);
+    const elections = await election.findByPk(request.params.id);
     if (election.launched){
       request.flash("error","Election is running,can't modify a question ")
       return response.redirect(`allElections/${request.params.id}`);
     }
     if(request.accepts("html")){
       response.render("questions",{
-        title: election.elecName,
+        title: elections.elecName,
         id: request.params.id,
         questions: anyQuestion,
-        election: election,
+        election: elections,
         csrfToken: request.csrfToken()
       })
     }else{
@@ -269,7 +269,7 @@ app.post(
       return response.redirect(`/createQuestion/${request.params.id}`);
     }
     try {
-      const question = await question.addquestion({
+      const questions = await question.addQuestions({
         elecId: request.params.id,
         questionName: request.body.questionName,
         desc: request.body.desc,
