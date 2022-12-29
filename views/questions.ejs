@@ -9,7 +9,7 @@
     <script>
         var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         function deletequestion(id) {
-            fetch(`/deletequestion/${id}`, {
+            fetch(`/deleteQuestion/${id}`, {
                 method: "delete",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
@@ -54,17 +54,17 @@
                             <div class="flex justify-between items-center w-full my-2 px-2">
                                 <div>
                                     <a href="/getelections/addoption/<%= id %>/<%= questions[i].id %>/options" class="my-2 text-lg text-purple-600 "><%= questions[i].question %></a>
-                                    <p class="text-black-00 text-md my-2"><a href="/getelections/addoption/<%=election.id%>/<%=questions[i].id%>/options"><%= questions[i].questionname %></p></a>
+                                    <p class="text-black-00 text-md my-2"><a href="/getelections/addoption/<%=election.id%>/<%=questions[i].id%>/options"><%= questions[i].questionName %></p></a>
                     
                                 </div>
                                 <div class="flex gap-2 text-600" align="center">
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">
         
-                                        <a href="/elections/<%=election.id%>/questions/<%=questions[i].id%>/edit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit </a>
+                                        <a href="/election/<%=election.id%>/questions/<%=questions[i].id%>/edit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit </a>
                                     </div>
                                      <% if((questions.length) >1) {%> 
                                     <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">    
-                                        <a onclick="deletequestion(<%= questions[i].id %>)" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
+                                        <a onclick="deleteQuestion(<%= questions[i].id %>)" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
                                          <%} %>
                                        
                                     </div>
