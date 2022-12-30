@@ -63,4 +63,8 @@ describe("test suite",()=>{
       })
       expect(response.statusCode).toBe(302)
     })
+    test("Adding a question",async()=>{
+      const agent = request.agent(server);
+      
+    })
 })

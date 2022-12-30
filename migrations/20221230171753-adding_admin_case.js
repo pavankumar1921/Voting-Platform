@@ -3,9 +3,11 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.addColumn("options", "optionId", {
-      type: Sequelize.DataTypes.INTEGER,
-    });/**
+    await queryInterface.addColumn("Admins", "case", {
+      type: Sequelize.DataTypes.STRING,
+      defaultValue: "admin" ,
+    });
+    /**
      * Add altering commands here.
      *
      * Example:
@@ -14,8 +16,8 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn("options", "optionId");
-    /**
+        await queryInterface.removeColumn("Admins", "case");
+        /**
      * Add reverting commands here.
      *
      * Example:
