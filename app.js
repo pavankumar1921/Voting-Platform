@@ -388,6 +388,48 @@ app.post("/getElections/addingOption/:id/:questionId/options",
       }
   });
 
+  //editing option
+app.get("/election/:elecId/questions/:questionId/options/:id/edit",
+connectEnsureLogin.ensureLoggedIn(),
+async (request, response) => {
+  // if (request.user.case === "admins") {
+    const adminId = request.user.id;
+    const admin = await Admin.findByPk(adminId);
+    const anyElection = await election.findByPk(request.params.electionId);
+    const giveQuestion = await question.findByPk(request.params.questionId);
+    const option = await options.findByPk(request.params.id);
+    response.render("editOption", {
+      username: admin.name,
+      election: anyElection,
+      question: giveQuestion,
+      options: option,
+      optionId:request.params.id,
+      csrf: request.csrfToken(),
+    });
+  // }
+})
+//updating option
+app.post(
+  "/election/:elecId/questions/:questionId/options/:optionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    // if (request.user.case === "admins") {
+      try {
+        await options.editOption(
+          request.body.optionName,
+          request.params.optionId
+        );
+        response.redirect(
+          `/getElections/addingOption/${request.params.elecId}/${request.params.questionId}/options`
+        );
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+  // }
+);
+
 app.get("/signout", (request, response, next) => {
   request.logout((err) => {
     if (err) {

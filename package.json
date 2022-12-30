@@ -24,16 +24,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pavankumar1921/cap2.git"
+    "url": "git+https://github.com/pavankumar1921/Voting-Platform.git"
   },
   "bugs": {
-    "url": "https://github.com/pavankumar1921/cap2/issues"
+    "url": "https://github.com/pavankumar1921/Voting-Platform/issues"
   },
-  "homepage": "https://github.com/pavankumar1921/cap2#readme",
+  "homepage": "https://github.com/pavankumar1921/Voting-Platform#readme",
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "connect-ensure-login": "^0.1.1",
+    
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.6",
     "csurf": "^1.11.0",
