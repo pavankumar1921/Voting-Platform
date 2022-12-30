@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 // eslint-disable-next-line no-unused-vars
-const { Admin, election, question,options,voters } = require("./models");
+const { Admin, election, question, options, voters } = require("./models");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
@@ -199,56 +199,62 @@ app.post(
   }
 );
 
-app.get("/elecs/:id",connectEnsureLogin.ensureLoggedIn(),
-  async(request,response)=>{
-    try{
+app.get(
+  "/elecs/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
       const questions = await question.getQuestions(request.params.id);
       const elections = await election.findByPk(request.params.id);
       // eslint-disable-next-line no-unused-vars
       const elecName = await election.getElections(
-        request.params.id,request.user.id
-      )
+        request.params.id,
+        request.user.id
+      );
       const countOfQuestions = await question.countQuestions(request.params.id);
-      response.render("elecQuestion",{
+      response.render("elecQuestion", {
         election: elections,
         publicurl: elections.publicurl,
         question: questions,
-        id:request.params.id,
+        id: request.params.id,
         title: elections.elecName,
         countOfQuestions: countOfQuestions,
-      })
-    }catch(error){
+      });
+    } catch (error) {
       console.log(error);
-      return response.status(422).json(error)
+      return response.status(422).json(error);
     }
+  }
+);
 
-  })
-
-app.get("/questions/:id",connectEnsureLogin.ensureLoggedIn(),
-  async(request,response)=>{
+app.get(
+  "/questions/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
     // eslint-disable-next-line no-unused-vars
     const allElections = await election.getElections(
       request.params.id,
       request.user.id
-    )
+    );
     const anyQuestion = await question.getQuestions(request.params.id);
     const elections = await election.findByPk(request.params.id);
-    if (election.launched){
-      request.flash("error","Election is running,can't modify a question ")
+    if (election.launched) {
+      request.flash("error", "Election is running,can't modify a question ");
       return response.redirect(`allElections/${request.params.id}`);
     }
-    if(request.accepts("html")){
-      response.render("questions",{
+    if (request.accepts("html")) {
+      response.render("questions", {
         title: elections.elecName,
         id: request.params.id,
         questions: anyQuestion,
         election: elections,
-        csrfToken: request.csrfToken()
-      })
-    }else{
-      return response.json({anyQuestion})
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      return response.json({ anyQuestion });
     }
-  });
+  }
+);
 
 app.get(
   "/createQuestion/:id",
@@ -286,54 +292,101 @@ app.post(
   }
 );
 
-app.get("/election/:elecId/questions/:questionId/edit",
+app.get(
+  "/election/:elecId/questions/:questionId/edit",
   connectEnsureLogin.ensureLoggedIn(),
-  async(request,response)=>{
-      const adminId = request.user.id;
-      const admin = await Admin.findByPk(adminId);
-      const electionGoing = await election.findByPk(request.params.elecId);
-      const presQuestion = await question.findByPk(request.params.questionId);
-      response.render("editQues",{
-        userName: admin.name,
-        election: electionGoing,
-        question: presQuestion,
-        csrf: request.csrfToken(),
-      })
-  })
+  async (request, response) => {
+    const adminId = request.user.id;
+    const admin = await Admin.findByPk(adminId);
+    const electionGoing = await election.findByPk(request.params.elecId);
+    const presQuestion = await question.findByPk(request.params.questionId);
+    response.render("editQues", {
+      userName: admin.name,
+      election: electionGoing,
+      question: presQuestion,
+      csrf: request.csrfToken(),
+    });
+  }
+);
 
-app.post("/election/:elecId/questions/:questionId/edit",
+app.post(
+  "/election/:elecId/questions/:questionId/edit",
   connectEnsureLogin.ensureLoggedIn(),
-  async(request,response)=>{
+  async (request, response) => {
     // if (request.user.case === "admins") {
-      try {
-        await question.editQuestion(
-          request.body.questionName,
-          request.body.desc,
-          request.params.questionId,
-        );
-        response.redirect(`/questions/${request.params.elecId}`);
-      } catch (error) {
-        console.log(error);
-        return;
+    try {
+      await question.editQuestion(
+        request.body.questionName,
+        request.body.desc,
+        request.params.questionId
+      );
+      response.redirect(`/questions/${request.params.elecId}`);
+    } catch (error) {
+      console.log(error);
+      return;
       // }
     }
-  })
+  }
+);
 
-  app.delete(
-    "/deletequestion/:id",
-    connectEnsureLogin.ensureLoggedIn(),
-    async (request, response) => {
-      // if (request.user.case === "admins") {
-        try {
-          const res = await question.deleteQuestion(request.params.id);
-          return response.json({ success: res === 1 });
-        } catch (error) {
-          console.log(error);
-          return response.status(422).json(error);
-        }
+app.delete(
+  "/deletequestion/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    // if (request.user.case === "admins") {
+    try {
+      const res = await question.deleteQuestion(request.params.id);
+      return response.json({ success: res === 1 });
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+  // }
+);
+
+app.get("/getElections/addingOption/:id/:questionId/options",
+connectEnsureLogin.ensureLoggedIn(),
+async(request,response) =>{
+  try {
+    const giveQuestion = await question.getQuestion(request.params.questionId);
+    const option = await options.getOptions(request.params.questionId);
+    if (request.accepts("html")) {
+      response.render("addOption", {
+        title: giveQuestion.questionName,
+        desc: giveQuestion.desc,
+        id: request.params.id,
+        questionId: request.params.questionId,
+        option,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      return response.json({
+        option,
+      });
+    }
+  } catch (err) {
+    return response.status(422).json(err);
+  }
+})
+app.post("/getElections/addingOption/:id/:questionId/options",
+  connectEnsureLogin.ensureLoggedIn(),
+  async(request,response) =>{
+      if(!request.body.optionName){
+        request.flash("error","Option must be given a name")
+        return response.redirect(`/getElections/addingOption/${request.params.id}/${request.params.questionId}/options`)
       }
-    // }
-  );
+      try{
+        await options.addingOption({
+          optionName: request.body.optionName,
+          questionId:request.params.questionId
+        })
+        return response.redirect(`/getElections/addingOption/${request.params.id}/${request.params.questionId}/options`)
+      }catch(error){
+        console.log(error)
+        return response.status(422).json(error)
+      }
+  });
 
 app.get("/signout", (request, response, next) => {
   request.logout((err) => {

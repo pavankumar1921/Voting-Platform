@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
         order:[["id","ASC"]]
       })
     }
+    static getQuestion(id){
+      return this.findOne({
+        where:{
+          id,
+        },
+        order:[["id","ASC"]]
+      })
+    }
 
     static countQuestions(elecId){
       return this.count({

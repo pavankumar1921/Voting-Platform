@@ -4,11 +4,42 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class options extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+    static addingOption({optionName,questionId}){
+      return this.create({
+        optionName,
+        questionId
+      })
+    }
+    static deleteOption(id){
+      return this.destroy({
+        where:{
+          id
+        }
+      })
+    }
+    static getOptions(questionId){
+      return this.findAll({
+        where:{
+          questionId
+        }
+      })
+    }
+    static getOption(id){
+      return this.findOne({
+        where:{
+          id,
+        }
+      })
+    }
+    static editOption(newOption,id){
+      return this.update({
+        optionName:newOption,
+      },{
+        where:{
+          id:id,
+        }
+      })
+    }
     static associate(models) {
       options.belongsTo(models.question,{
         foreignKey:"questionId",
