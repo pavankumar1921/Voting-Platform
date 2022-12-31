@@ -18,6 +18,26 @@ module.exports = (sequelize, DataTypes) => {
         order:[["id","ASC"]]
       })
     }
+    static startElection(id){
+      return this.update({
+        start:true,
+      },
+      {
+        where:{
+          id : id
+        }
+      })
+    }
+    static endElection(id){
+      return this.election.update({
+        end:true,
+      },
+      {
+        where:{
+          id:id
+        }
+      })
+    }
     static addElection({elecName,publicurl,adminId}){
       return this.create({
         elecName,
