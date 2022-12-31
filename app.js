@@ -45,7 +45,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
-  "admin",
+  "admin-local",
   new LocalStrategy(
     {
       usernameField: "email",
@@ -69,7 +69,7 @@ passport.use(
 );
 
 passport.use(
-  "voter",
+  "voter-local",
   new LocalStrategy(
     {
       usernameField: "voterId",
@@ -168,38 +168,33 @@ app.get("/signout", (request, response, next) => {
 });
 
 app.get("/login", (request, response) => {
-  response.render("login", {
+ if(request.user){
+  return response.redirect("/election");
+}
+   response.render("login", {
     title: "Login",
     csrfToken: request.csrfToken(),
   });
 });
 
-app.get(
-  "/election",
-  connectEnsureLogin.ensureLoggedIn(),
+
+app.post(
+  "/session",
+  passport.authenticate("admin-local", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
   async (request, response) => {
-    let user = await Admin.findByPk(request.user.id);
-    const userName = user.dataValues.firstName;
-    const list_of_elections = await election.getElections(request.user.id);
-    if (request.accepts("html")) {
-      response.render("election", {
-        title: "Voting Platform",
-        userName,
-        list_of_elections,
-      });
-    } else {
-      return response.json({
-        list_of_elections,
-      });
-    }
+    return response.redirect("/election");
   }
 );
+
 app.post("/admin", async (request, response) => {
   if (request.body.email.length == 0) {
-    request.flash("error", "Email can,t be empty! Try entering mail address.");
+    request.flash("error",
+     "Email can,t be empty! Try entering mail address.");
     return response.redirect("/signup");
   }
-
   if (request.body.firstName.length == 0) {
     request.flash(
       "error",
@@ -208,7 +203,8 @@ app.post("/admin", async (request, response) => {
     return response.redirect("/signup");
   }
   if (request.body.password.length < 8) {
-    request.flash("error", "Password length should be minimun of 8 characters");
+    request.flash("error",
+     "Password length should be minimun of 8 characters");
     return response.redirect("/signup");
   }
   const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
@@ -229,10 +225,40 @@ app.post("/admin", async (request, response) => {
     });
   } catch (error) {
     console.log(error);
-    // request.flash("error", "User Already Exist with this mail!");
+    request.flash("error", "This mail is already used.");
     return response.redirect("/signup");
   }
 });
+
+app.get(
+  "/election",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admin") {
+      let user = await Admin.findByPk(request.user.id);
+      const userName = user.dataValues.firstName;
+      try{
+        const list_of_elections = await election.getElections(request.user.id);
+        if (request.accepts("html")) {
+          response.render("election", {
+            title: "Voting Platform",
+            userName,
+            list_of_elections,
+          });
+        } else {
+          return response.json({
+          list_of_elections,
+          });
+        }
+      }catch(error){
+        console.log(error);
+        return response.status(422).json(error);
+      }
+    }else if(request.user.case === "voter"){
+      return response.redirect("/")
+    }    
+  }
+);
 
 app.get(
   "/creatingElection",
@@ -653,14 +679,5 @@ app.delete(
 
 
 
-app.post(
-  "/session",
-  passport.authenticate("local", {
-    failureRedirect: "/login",
-    failureFlash: true,
-  }),
-  async (request, response) => {
-    return response.redirect("/election");
-  }
-);
+
 module.exports = app;
