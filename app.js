@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 // eslint-disable-next-line no-unused-vars
 const { Admin, election, question, options, voters } = require("./models");
+
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
@@ -346,6 +347,7 @@ app.get(
   "/questions/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
+    if (request.user.case === "admin"){
     // eslint-disable-next-line no-unused-vars
     const allElections = await election.getElections(
       request.params.id,
@@ -368,6 +370,7 @@ app.get(
     } else {
       return response.json({ anyQuestion });
     }
+  }
   }
 );
 
@@ -743,6 +746,20 @@ async(request,response)=>{
     }
   }
 })
+
+//public url
+// app.get("/externalpage/:publicurl", async (request, response) => {
+//   try {
+//     const election = await election.getElecURL(request.params.publicurl);
+//     return response.render("loginvoter", {
+//       publicurl: election.publicurl,
+//       csrfToken: request.csrfToken(),
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return response.status(422).json(error);
+//   }
+// });
 
 //preview election
 app.get(

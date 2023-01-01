@@ -20,8 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     static getOptions(questionId){
       return this.findAll({
         where:{
-          questionId
-        }
+          questionId,
+        },
+        order:[["id","ASC"]]
       })
     }
     static getOption(id){

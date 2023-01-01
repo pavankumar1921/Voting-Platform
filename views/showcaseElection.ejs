@@ -18,8 +18,8 @@
           <div>
             <% for (let i=0; i<questions.length; i++) { %>
                 <div>
-                    <p class="font-bold text">Question <%= i+1 %> : <%= questions[i].questionname %></p>
-                    <p class="font-semibold text-gray-600">Description : <%= questions[i].description %></p>
+                    <p class="font-bold text">Question <%= i+1 %> : <%= questions[i].questionName %></p>
+                    <p class="font-semibold text-gray-600">Description : <%= questions[i].desc %></p>
                     <div class="pt-3 pl-5">
                         <% for (let j=0; j<options[i].length; j++) { %>
                           <div class="flex gap-2">
@@ -30,7 +30,7 @@
                                 value="<%= options[i][j].id %>"
                                 name="<%= questions[i].id %>"
                             />
-                            <label for="<%= questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].optionname %></label>
+                            <label for="<%= questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].optionName %></label>
                           </div>
                         <% } %>
                     </div>
