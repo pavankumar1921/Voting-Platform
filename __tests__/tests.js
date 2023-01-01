@@ -333,6 +333,7 @@ describe("test suite", () => {
     expect(res.statusCode).toBe(302);
   });
 
+  
   test("Deleting an option", async () => {
     const agent = request.agent(server);
     await login(agent, "kumar@gmail.com", "12345678");
