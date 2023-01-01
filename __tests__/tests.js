@@ -333,7 +333,7 @@ describe("test suite", () => {
     expect(res.statusCode).toBe(302);
   });
 
-  
+
   test("Deleting an option", async () => {
     const agent = request.agent(server);
     await login(agent, "kumar@gmail.com", "12345678");
@@ -439,5 +439,27 @@ describe("test suite", () => {
       _csrf: csrfToken,
     });
     expect(response.statusCode).toBe(302);
+  });
+
+  
+  test("Test for previewing election", async () => {
+    const agent = request.agent(server);
+    await login(agent, "kumar@gmail.com", "12345678");
+    let res = await agent.get("/creatingElection");
+    let csrfToken = extractCsrfToken(res);
+    await agent.post("/election").send({
+      elecName: "New Election",
+      publicurl: "URL",
+      _csrf: csrfToken,
+    });
+    const ElectionsResponse = await agent
+      .get("/election")
+      .set("Accept", "application/json");
+    const parsedResponse = JSON.parse(ElectionsResponse.text);
+    const totalElections = parsedResponse.list_of_elections.length;
+    const latestElection = parsedResponse.list_of_elections[totalElections - 1];
+    res = await agent.get(`/election/${latestElection.id}/sampleElection`);
+    csrfToken = extractCsrfToken(res);
+    expect(res.statusCode).toBe(200);
   });
 });

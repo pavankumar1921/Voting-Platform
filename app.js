@@ -231,7 +231,6 @@ app.post("/admin", async (request, response) => {
   }
 });
 
-
 app.get(
   "/election",
   connectEnsureLogin.ensureLoggedIn(),
@@ -328,7 +327,7 @@ app.get(
           election: elections,
           publicurl: elections.publicurl,
           question: questions,
-          voters:voter,
+          voters: voter,
           id: request.params.id,
           title: elections.elecName,
           countOfQuestions: countOfQuestions,
@@ -347,30 +346,30 @@ app.get(
   "/questions/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
-    if (request.user.case === "admin"){
-    // eslint-disable-next-line no-unused-vars
-    const allElections = await election.getElections(
-      request.params.id,
-      request.user.id
-    );
-    const anyQuestion = await question.getQuestions(request.params.id);
-    const elections = await election.findByPk(request.params.id);
-    if (election.launched) {
-      request.flash("error", "Election is running,can't modify a question ");
-      return response.redirect(`allElections/${request.params.id}`);
+    if (request.user.case === "admin") {
+      // eslint-disable-next-line no-unused-vars
+      const allElections = await election.getElections(
+        request.params.id,
+        request.user.id
+      );
+      const anyQuestion = await question.getQuestions(request.params.id);
+      const elections = await election.findByPk(request.params.id);
+      if (election.launched) {
+        request.flash("error", "Election is running,can't modify a question ");
+        return response.redirect(`allElections/${request.params.id}`);
+      }
+      if (request.accepts("html")) {
+        response.render("questions", {
+          title: elections.elecName,
+          id: request.params.id,
+          questions: anyQuestion,
+          election: elections,
+          csrfToken: request.csrfToken(),
+        });
+      } else {
+        return response.json({ anyQuestion });
+      }
     }
-    if (request.accepts("html")) {
-      response.render("questions", {
-        title: elections.elecName,
-        id: request.params.id,
-        questions: anyQuestion,
-        election: elections,
-        csrfToken: request.csrfToken(),
-      });
-    } else {
-      return response.json({ anyQuestion });
-    }
-  }
   }
 );
 
@@ -714,38 +713,47 @@ app.delete(
 );
 
 //launching an election
-app.get("/election/:id/start",connectEnsureLogin.ensureLoggedIn(),
-async(request,response)=>{
-  if(request.user.case === "admin"){
-    const electionQuestions = await question.findAll({
-      where: {elecId:request.params.id}
-    });
-    if(electionQuestions.length <= 1){
-      request.flash("error","To launch an election there must atleast 2 questions.");
-      return response.redirect(`/elecs/${request.params.id}`);
-    }
-    for (let i = 0; i < question.length; i++) {
-      const allOption = await options.getOptions(question[i].id);
-      if (allOption.length <= 1) {
-        request.flash("error", "Each question should possess atleast 2 options!");
+app.get(
+  "/election/:id/start",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    if (request.user.case === "admin") {
+      const electionQuestions = await question.findAll({
+        where: { elecId: request.params.id },
+      });
+      if (electionQuestions.length <= 1) {
+        request.flash(
+          "error",
+          "To launch an election there must atleast 2 questions."
+        );
         return response.redirect(`/elecs/${request.params.id}`);
       }
-    }
-    const allVoters = await voters.getVoters(request.params.id);
-    if (allVoters.length <= 1) {
-      request.flash("error", "There must be minimun of two voters");
-      return response.redirect(`/elecs/${request.params.id}`);
-    }
+      for (let i = 0; i < question.length; i++) {
+        const allOption = await options.getOptions(question[i].id);
+        if (allOption.length <= 1) {
+          request.flash(
+            "error",
+            "Each question should possess atleast 2 options!"
+          );
+          return response.redirect(`/elecs/${request.params.id}`);
+        }
+      }
+      const allVoters = await voters.getVoters(request.params.id);
+      if (allVoters.length <= 1) {
+        request.flash("error", "There must be minimun of two voters");
+        return response.redirect(`/elecs/${request.params.id}`);
+      }
 
-    try {
-      await election.startElection(request.params.id);
-      return response.redirect(`/elecs/${request.params.id}`);
-    } catch (error) {
-      console.log(error);
-      return response.send(error);
+      try {
+        await election.startElection(request.params.id);
+        return response.redirect(`/elecs/${request.params.id}`);
+      } catch (error) {
+        console.log(error);
+        return response.send(error);
+      }
     }
   }
-})
+);
 
 //public url
 // app.get("/externalpage/:publicurl", async (request, response) => {
@@ -768,12 +776,12 @@ app.get(
   async (request, response) => {
     if (request.user.case === "admin") {
       const findElection = await election.findByPk(request.params.id);
-      const options = [];
+      const optionStack = [];
       const findQuestion = await question.getQuestions(request.params.id);
 
       for (let i = 0; i < findQuestion.length; i++) {
-        const allOptions = await options.getOptions(question[i].id);
-        options.push(allOptions);
+        const allOptions = await options.getOptions(findQuestion[i].id);
+        optionStack.push(allOptions);
       }
       if (findElection.start) {
         request.flash("error", "You can not preview election while Running");
@@ -783,7 +791,7 @@ app.get(
       response.render("showcaseElection", {
         election: findElection,
         questions: findQuestion,
-        options: options,
+        options: optionStack,
         csrf: request.csrfToken(),
       });
     }
