@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,29 +12,33 @@
         function deleteOption(id) {
             fetch(`/${id}/deleteOption`, {
                 method: "delete",
-                headers: {"Content-Type":"application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "_csrf":token
+                    "_csrf": token
                 })
-            }).then((res)=>{
+            }).then((res) => {
                 if (res.ok) {
                     window.location.reload();
                 }
-            }).catch((err)=> console.error(err))
+            }).catch((err) => console.error(err))
         }
     </script>
     <link rel="stylesheet" href="./css/style.css">
-    <title><%= title %></title>
+    <title>
+        <%= title %>
+    </title>
     <style>
         span {
-          display: block;
+            display: block;
         }
-        </style>
+    </style>
 </head>
+
 <body style="background-color: rgb(182, 247, 217);">
     <b>
-        <a href="/questions/<%= id%>" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
-       </b>
+        <a href="/questions/<%= id%>"
+            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
+    </b>
     <div class="grid grid-cols-6">
         <div class="col-start-2 col-span-4">
             <span class="text-2xl font-dark ">Question : <%= title %></span>
@@ -43,39 +48,51 @@
                     <% for(let i=0; i<option.length; i++) { %>
                         <li class="option-item">
                             <div class="flex justify-between items-center w-full my-2 px-2 py-1">
-                                <p class="ml-2 text-lg "><%= option[i].optionName %></p>
+                                <p class="ml-2 text-lg ">
+                                    <%= option[i].optionName %>
+                                </p>
                                 <div class="flex gap-2 ">
-                                <div class="rounded w-fit px-2 py-1 flex gap-2">                                                                          
-                                    <a href="/election/<%=id%>/questions/<%=questionId%>/options/<%=option[i].id%>/edit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit</a>
-                                </div>
-                                <div class="rounded w-fit px-2 py-1 flex gap-2">
-                                              
-                                    <a onclick="deleteOption(<%= option[i].id %>)" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
-                                </div>
+                                    <div class="rounded w-fit px-2 py-1 flex gap-2">
+                                        <a href="/election/<%=id%>/questions/<%=questionId%>/options/<%=option[i].id%>/edit"
+                                            class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit</a>
+                                    </div>
+                                    <div class="rounded w-fit px-2 py-1 flex gap-2">
+
+                                        <a onclick="deleteOption(<%= option[i].id %>)"
+                                            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
+                                    </div>
                                 </div>
                             </div>
                         </li>
-                    <% } %>
+                        <% } %>
                 </ol>
             </div>
-          <form action="/getElections/addingOption/<%=id%>/<%= questionId %>/options" method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <div class="py-3">
-           <input type="text" name="optionName" placeholder="Enter an option"  class="border border-gray-300 text-gray-900 rounded p-2 w-full">
-        </div>  
-        <div class="py-3"> 
-           <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add Option</button>        
-        </div>  
-        </form>
-        <b>
-            <p class=" justify-center" align="center"><%= (option.length==0)?"No options are added yet!!":"" %></p>
-        </b>
-        <% if(messages && messages.error && messages.error.length > 0)  { %>
-            <% for(var i=0; i<messages.error.length; i++) { %>
-              <p class="bg-red-200 my-3 list-none rounded px-4 py-2"><%= messages.error[i] %></p>
-            <% } %>
-          <% } %>
+            <form action="/getElections/addingOption/<%=id%>/<%= questionId %>/options" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="py-3">
+                    <input type="text" name="optionName" placeholder="Enter an option"
+                        class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                </div>
+                <div class="py-3">
+                    <button type="submit"
+                        class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add
+                        Option</button>
+                </div>
+            </form>
+            <b>
+                <p class=" justify-center" align="center">
+                    <%= (option.length==0)?"No options are added yet!!":"" %>
+                </p>
+            </b>
+            <% if(messages && messages.error && messages.error.length> 0) { %>
+                <% for(var i=0; i<messages.error.length; i++) { %>
+                    <p class="bg-red-200 my-3 list-none rounded px-4 py-2">
+                        <%= messages.error[i] %>
+                    </p>
+                    <% } %>
+                        <% } %>
         </div>
     </div>
-  </body>
+</body>
+
 </html>
