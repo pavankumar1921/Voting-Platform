@@ -403,7 +403,7 @@ app.post(
           desc: request.body.desc,
         });
         return response.redirect(
-          `/getElections/addingOption/${request.params.id}/${question.id}/options`
+          `/getElections/addingOption/${request.params.id}/${questions.id}/options`
         );
       } catch (error) {
         console.log(error);
