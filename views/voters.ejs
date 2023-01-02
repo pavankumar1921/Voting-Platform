@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,69 +12,90 @@
         function deleteVoter(id) {
             fetch(`/${id}/deleteVoter`, {
                 method: "delete",
-                headers: {"Content-Type":"application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "_csrf":token
+                    "_csrf": token
                 })
-            }).then((res)=>{
+            }).then((res) => {
                 if (res.ok) {
                     window.location.reload();
                 }
-            }).catch((err)=> console.error(err))
+            }).catch((err) => console.error(err))
         }
     </script>
-    <title><%= title %></title>
+    <title>
+        <%= title %>
+    </title>
 </head>
-<body  style="background-color: rgb(182, 247, 217);"">
-            <div class="grid grid-cols-6">
-                <div class="col-start-3 col-span-2">
-            <center>
+
+<body class="bg-gray-200">
+    <div class="my-2 mx-5">
+        <div class="flex justify-center">
+            <div>
                 <b>
-            <h5 class="text-3xl"><%= title %> Voters-List</h5>
-        </b>
-            </center>
-                </div>
-            </div>
-            <div class="bg-black-600 px-2 py-1 hover:bgblack-600">
-                <b>
-            </b>
-                   <a href="/elecs/<%=id%>" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
-                   <a href="/addVoter/<%=id%>" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add New Voter</a>
+                    <h1 class="text-3xl font-semibold">
+                        <%= title %> Voters List
+                    </h1>
+                </b>
             </div>
         </div>
-        <div class="flex-auto">
-            <div class="mx-4">  
-                <div class="grid grid-cols-6">
-                    <div class="col-start-3 col-span-2">
-                    <b>
-                <p class="text-black-600"><%= (voters.length==0)?"Not added any Voters Yet!":"" %></p>
-            </b>
-                <ol class="list-decimal" type="1">
-                    <% for (let i=0; i<voters.length; i++) { %>
-                        <li>
-                            
-                            <div class="flex justify-between items-center w-full my-2 px-2">
-                                <div>
-                                    <a href="" class="my-2 text-lg text-black-600 "><%= voters[i].voterId %></a>
-                                </div>
-                                <div class="flex gap-2 text-600" align="center">
-                                    <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">
-        
-                                        <a href="/election/<%=election.id%>/voter/<%=voters[i].id%>/edit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5">Edit passoword</a>
-                                    </div>
-                                     <% if((voters.length) >1) {%> 
-                                    <div class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">    
-                                        <a onclick="deleteVoter(<%= voters[i].id %>)" class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5">Delete</a>
-                                         <%} %>
-                                       
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    <% } %>
-                </ol>
+        <br>
+        <div class="bg-gray-lighter min-h-screen flex flex-col">
+            <div class="container max-w-sm mx-auto flex-1 flex flex-col justify  px-2">
+                <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+                    <div class="bg-black-600 px-3 py-1 gap-2 justify-center hover:bgblack-600">
+                        <a href="/elecs/<%=id%>"
+                            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go
+                            Back</a>
+                        <a href="/addVoter/<%=id%>"
+                            class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add New
+                            Voter</a>
+                    </div>
+                    <br>
+                    <div class="flex-auto">
+                        <div class="mx-4">
+                            <b>
+                                <p class="text-black-600">
+                                    <%= (voters.length==0)?"There are no voters!":"" %>
+                                </p>
+                            </b>
+                            <ol class="list-decimal" type="1">
+                                <% for (let i=0; i<voters.length; i++) { %>
+                                    <li>
+
+                                        <div class="flex justify w-full my-2 px-2">
+                                            <div>
+                                                <a href="" class="my-2 text-lg text-black-600 ">
+                                                    <%= voters[i].voterId %>
+                                                </a>
+                                            </div>
+                                            <div class="flex gap-2 text-600" align="right">
+                                                <div
+                                                    class="rounded w-fit px-2 py-1 flex gap-2 hover:text-600">
+
+                                                    <a href="/election/<%=election.id%>/voter/<%=voters[i].id%>/edit"
+                                                        class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5">Edit
+                                                    </a>
+                                                </div>
+                                                <% if((voters.length)>1) {%>
+                                                    <div
+                                                        class="rounded w-fit px-2 py-1 flex gap-2 cursor-pointer hover:text-600">
+                                                        <a onclick="deleteVoter(<%= voters[i].id %>)"
+                                                            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5">Delete</a>
+                                                        <%} %>
+
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <% } %>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>

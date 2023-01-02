@@ -34,63 +34,84 @@
     </style>
 </head>
 
-<body style="background-color: rgb(182, 247, 217);">
-    <b>
-        <a href="/questions/<%= id%>"
-            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go Back</a>
-    </b>
-    <div class="grid grid-cols-6">
-        <div class="col-start-2 col-span-4">
-            <span class="text-2xl font-dark ">Question : <%= title %></span>
-            <span class="text-black-800">Description : <%= desc %></span>
-            <div class="ml-12">
-                <ol class="list-decimal">
-                    <% for(let i=0; i<option.length; i++) { %>
-                        <li class="option-item">
-                            <div class="flex justify-between items-center w-full my-2 px-2 py-1">
-                                <p class="ml-2 text-lg ">
-                                    <%= option[i].optionName %>
-                                </p>
-                                <div class="flex gap-2 ">
-                                    <div class="rounded w-fit px-2 py-1 flex gap-2">
-                                        <a href="/election/<%=id%>/questions/<%=questionId%>/options/<%=option[i].id%>/edit"
-                                            class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit</a>
-                                    </div>
-                                    <div class="rounded w-fit px-2 py-1 flex gap-2">
-
-                                        <a onclick="deleteOption(<%= option[i].id %>)"
-                                            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <% } %>
-                </ol>
+<body class="bg-gray-200">
+    <div class="my-2 mx-5">
+        <div class="flex justify-center">
+            <div>
+                <b>
+                    <h1 class="text-3xl font-semibold">Add an Option</h1>
+                </b>
             </div>
-            <form action="/getElections/addingOption/<%=id%>/<%= questionId %>/options" method="post">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <div class="py-3">
-                    <input type="text" name="optionName" placeholder="Enter an option"
-                        class="border border-gray-300 text-gray-900 rounded p-2 w-full">
-                </div>
-                <div class="py-3">
-                    <button type="submit"
-                        class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add
-                        Option</button>
-                </div>
-            </form>
+        </div>
+        <br>
+        <div>
             <b>
-                <p class=" justify-center" align="center">
-                    <%= (option.length==0)?"No options are added yet!!":"" %>
-                </p>
+                <a href="/questions/<%= id%>"
+                    class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-5 py-2 justify-right">Go
+                    Back</a>
             </b>
-            <% if(messages && messages.error && messages.error.length> 0) { %>
-                <% for(var i=0; i<messages.error.length; i++) { %>
-                    <p class="bg-red-200 my-3 list-none rounded px-4 py-2">
-                        <%= messages.error[i] %>
-                    </p>
-                    <% } %>
-                        <% } %>
+        </div>
+        <br>
+
+        <div class="bg-gray-lighter min-h-screen flex flex-col">
+            <div class="container max-w-sm mx-auto flex-1 flex flex-col justify  px-2">
+                <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+                    <div class="grid grid-cols-6">
+                        <div class="col-start-1 col-span-5">
+                            <span class="text-2xl font-dark-medium ">Question : <%= title %></span>
+                            <span class="text-black-800 font-medium">Description : <%= desc %></span>
+                            <div class="ml-6">
+                                <ol class="list-decimal">
+                                    <% for(let i=0; i<option.length; i++) { %>
+                                        <li class="option-item">
+                                            <div class="flex justify w-full my-2 px-2 py-1">
+                                                <p class="ml-2 text-lg ">
+                                                    <%= option[i].optionName %>
+                                                </p>
+                                                <div class="flex gap-2 ">
+                                                    <div class="rounded w-fit px-2 py-1 justify-right flex gap-2">
+                                                        <a href="/election/<%=id%>/questions/<%=questionId%>/options/<%=option[i].id%>/edit"
+                                                            class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-3 py-1.5 justify-right">Edit</a>
+                                                    </div>
+                                                    <div class="rounded w-fit px-2 justify-right py-1 flex gap-2">
+
+                                                        <a onclick="deleteOption(<%= option[i].id %>)"
+                                                            class="text-white bg-red-600 hover:bg-red-800 font-medium rounded px-3 py-1.5 justify-right">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <% } %>
+                                </ol>
+                            </div>
+                            <form action="/getElections/addingOption/<%=id%>/<%= questionId %>/options" method="post">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <div class="py-3">
+                                    <input type="text" name="optionName" placeholder="Enter an option"
+                                        class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                                </div>
+                                <div class="py-3">
+                                    <button type="submit"
+                                        class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Add
+                                        Option</button>
+                                </div>
+                            </form>
+                            <b>
+                                <p class=" justify-center" align="center">
+                                    <%= (option.length==0)?"No options are added yet!!":"" %>
+                                </p>
+                            </b>
+                            <% if(messages && messages.error && messages.error.length> 0) { %>
+                                <% for(var i=0; i<messages.error.length; i++) { %>
+                                    <p class="bg-red-200 my-3 list-none rounded px-4 py-2">
+                                        <%= messages.error[i] %>
+                                    </p>
+                                    <% } %>
+                                        <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
